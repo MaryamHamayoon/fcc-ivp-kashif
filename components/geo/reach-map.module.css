@@ -1,0 +1,32 @@
+/*
+ * What MapLibre needs to lay out its canvas, without its 80 KB stylesheet: this map uses none of
+ * MapLibre's controls (the attribution line is ours), so only the canvas rules remain.
+ */
+.host :global(.maplibregl-canvas-container) {
+  position: absolute;
+  inset: 0;
+}
+
+.host :global(.maplibregl-canvas) {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.host :global(.maplibregl-canvas-container.maplibregl-interactive) {
+  cursor: grab;
+}
+
+.host :global(.maplibregl-canvas-container.maplibregl-interactive:active) {
+  cursor: grabbing;
+}
+
+/* The canvas fills its frame, so its ring sits inside it rather than outside, where the frame would clip it. */
+.host :global(.maplibregl-canvas:focus-visible) {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+.host :global(.maplibregl-control-container) {
+  display: none;
+}

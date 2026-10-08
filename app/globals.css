@@ -1,0 +1,903 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Theme is switched by next-themes via data-theme on <html>. The rail can also wear the dark
+   theme on its own ("hybrid": lib/preferences/schema.ts `rail`), in which case it and everything
+   in it count as dark too. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, [data-rail="dark"]:not([data-theme="dark"]) [data-rail-surface], [data-rail="dark"]:not([data-theme="dark"]) [data-rail-surface] *));
+/* High-contrast preference (Display & accessibility), for the few places tokens cannot reach. */
+@custom-variant hc (&:where([data-contrast="high"], [data-contrast="high"] *));
+
+/* ------------------------------------------------------------------ */
+/*  Design tokens — direction v3 (2026-09-04): one deep forest green    */
+/*  does the work of brand, action and emphasis; gold survives only     */
+/*  where it means FCC (the seal and the OCH star). Light              */
+/*  ("Paper") is the default theme. Every text/background pair below   */
+/*  meets WCAG 2.1 AA (≥ 4.5:1) — verified by computation, not by eye.  */
+/* ------------------------------------------------------------------ */
+:root {
+  --radius: 0.3125rem;
+
+  /* surfaces */
+  --background: #f4f5f1;
+  --foreground: #16211c;
+  --card: #ffffff;
+  --card-foreground: #16211c;
+  --popover: #ffffff;
+  --popover-foreground: #16211c;
+  --muted: #eef1ec;
+  --muted-foreground: #5c6a63;
+  --border: #e2e6e1;
+  --input: #cfd6d0;
+
+  /* brand */
+  --brand: #2e5c4b;           /* forest green — buttons, links, active states, focus */
+  --brand-deep: #244c3d;
+  --navy: #1c3664;            /* official FCC logo navy — the seal's own color, nowhere else */
+  --ink: #16211c;
+  --gold: #c9a44c;            /* seal gold — the map's graticule and the OCH star only */
+  --gold-deep: #80621e;       /* the text-safe gold: 4.5:1 on white and on a gold/18 wash */
+  --ok: #1e6a47;              /* severity: fine / on time — 4.5:1 on a 10% tint over muted */
+  --warn: #a04a08;            /* severity: needs a nudge — 4.5:1 on a warn/15 wash */
+  --alert: #b91c1c;           /* severity: overdue / blocked */
+  --primary: var(--brand);
+  --primary-foreground: #ffffff;
+  --secondary: #e9efeb;
+  --secondary-foreground: #1f4a3b;
+  --accent: #e6f1ea;          /* the pale green tint: active nav, selected rows, soft emphasis */
+  --accent-foreground: #1f4a3b;
+  --destructive: #b42318;
+  --ring: var(--brand);
+
+  /* the program band — the one saturated surface in the app */
+  --band: #2f5f4d;
+  --band-deep: #244c3d;
+  --band-foreground: #ffffff;
+  --band-muted: rgba(255, 255, 255, 0.8);
+  --band-surface: rgba(255, 255, 255, 0.07);
+  --band-border: rgba(255, 255, 255, 0.14);
+
+  /* meeting status */
+  --status-requested: #2b6cb0;
+  --status-developing: #8a5a12;
+  --status-clearance: #6b46c1;
+  --status-confirmed: #1e7a4f;
+  --status-completed: #0f766e;
+  --status-closed: #5c6a63;
+  --status-on-hold: #526379;
+  --status-cancelled: #9b2c2c;
+
+  /* waiting-on aging bands */
+  --age-ok: #1e7b4f;
+  --age-warn: #8f5d13;
+  --age-alert: #b91c1c;
+
+  /* charts — fixed categorical order, validated for CVD separation on white */
+  --chart-1: #2e8557;
+  --chart-2: #c48a1c;
+  --chart-3: #3b6fd8;
+  --chart-4: #d0506d;
+  --chart-5: #875bd8;
+  --chart-6: #1c9ca3;
+  --chart-grid: #e2e6e1;
+
+  /* map (Global reach): basemap, labels, the choropleth's far end */
+  --map-water: #dde5e2;
+  --map-land: #fbfbf8;
+  --map-land-2: #f5f6f1;
+  --map-forest: #f0f3ec;
+  --map-urban: #f1f2ee;
+  --map-glacier: #ffffff;
+  --map-border: #b3beb8;
+  --map-label: #4f5d56;
+  --map-label-city: #2f3b35;
+  --map-halo: #fbfbf8;
+  --map-ocean-label: #536862;
+  --map-road: #e9ece6;
+  --map-ramp-to: #3f7a61;
+
+  /* side rail — a surface like a card, in both themes */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #16211c;
+  --sidebar-primary: var(--brand);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e6f1ea;
+  --sidebar-accent-foreground: #1f4a3b;
+  --sidebar-border: #e2e6e1;
+  --sidebar-ring: var(--brand);
+  --sidebar-muted: #5c6a63;
+
+  --shadow-soft: 0 1px 2px rgb(22 33 28 / 0.04), 0 8px 24px -12px rgb(22 33 28 / 0.1);
+  --shadow-lift: 0 2px 4px rgb(22 33 28 / 0.06), 0 16px 40px -16px rgb(22 33 28 / 0.18);
+}
+
+/* "Deep Forest" theme — the same recipe on near-black green. Each dark block below also
+   dresses the rail alone when the reader pairs a dark rail with a light page ("hybrid"). */
+[data-theme="dark"],
+:root[data-rail="dark"]:not([data-theme="dark"]) [data-rail-surface] {
+  --background: #0f1613;
+  --foreground: #e7ece8;
+  --card: #161f1b;
+  --card-foreground: #e7ece8;
+  --popover: #161f1b;
+  --popover-foreground: #e7ece8;
+  --muted: #1e2924;
+  --muted-foreground: #a3b1a9;
+  --border: #26332c;
+  --input: #33423a;
+
+  --brand: #5fae8c;
+  --brand-deep: #4a9576;
+  --navy: #9db4d8;
+  --ink: #e7ece8;
+  --gold: #d9b65e;
+  --gold-deep: #d9b65e;
+  --ok: #5ccf95;
+  --warn: #fbbf24;
+  --alert: #f87171;
+  --primary: var(--brand);
+  --primary-foreground: #0f1613;
+  --secondary: #1e2924;
+  --secondary-foreground: #e7ece8;
+  --accent: #1a2d25;
+  --accent-foreground: #9fd8ba;
+  --destructive: #f28b8b;
+  --ring: var(--brand);
+
+  --band: #1e3d32;
+  --band-deep: #163027;
+  --band-foreground: #f1f6f2;
+  --band-muted: rgba(241, 246, 242, 0.8);
+  --band-surface: rgba(255, 255, 255, 0.07);
+  --band-border: rgba(255, 255, 255, 0.12);
+
+  --status-requested: #7fb3f0;
+  --status-developing: #e2b15a;
+  --status-clearance: #b59cf0;
+  --status-confirmed: #5ccf95;
+  --status-completed: #5bd0c4;
+  --status-closed: #a3b1a9;
+  --status-on-hold: #93a1b8;
+  --status-cancelled: #f28b8b;
+
+  --age-ok: #5ccf95;
+  --age-warn: #e2b15a;
+  --age-alert: #f28b8b;
+
+  --chart-1: #33926a;
+  --chart-2: #c88214;
+  --chart-3: #4a7ed9;
+  --chart-4: #d15a7c;
+  --chart-5: #8e70df;
+  --chart-6: #219ca8;
+  --chart-grid: #26332c;
+
+  --map-water: #09100c;
+  --map-land: #172019;
+  --map-land-2: #18211b;
+  --map-forest: #16201a;
+  --map-urban: #1b231e;
+  --map-glacier: #1e2823;
+  --map-border: #34463c;
+  --map-label: #9aaba1;
+  --map-label-city: #c7d3cc;
+  --map-halo: #0f1613;
+  --map-ocean-label: #678477;
+  --map-road: #1f2b25;
+  --map-ramp-to: #7cc8a3;
+
+  --sidebar: #161f1b;
+  --sidebar-foreground: #e7ece8;
+  --sidebar-primary: var(--brand);
+  --sidebar-primary-foreground: #0f1613;
+  --sidebar-accent: #1a2d25;
+  --sidebar-accent-foreground: #9fd8ba;
+  --sidebar-border: #26332c;
+  --sidebar-ring: var(--brand);
+  --sidebar-muted: #a3b1a9;
+
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.5), 0 16px 40px -16px rgb(0 0 0 / 0.7);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Display & accessibility preferences (lib/preferences/schema.ts).   */
+/*  Each is a data-* attribute on <html>, stamped before first paint.  */
+/*  A block overrides only the tokens it must; the rest inherit from   */
+/*  the theme above. Every text pair here was verified by computation. */
+/* ------------------------------------------------------------------ */
+
+/* Typeface: Public Sans, or the hyperlegible face when asked for. */
+:root {
+  --font-ui: var(--font-public-sans);
+}
+:root[data-font="legible"] {
+  --font-ui: var(--font-legible);
+}
+
+/* Text size: the root size, so every rem-based dimension (and so every control) follows the text. */
+:root[data-text="small"] {
+  font-size: 87.5%;
+}
+:root[data-text="large"] {
+  font-size: 112.5%;
+}
+:root[data-text="xl"] {
+  font-size: 125%;
+}
+
+/* Accent "FCC navy": the seal's own blue as the working color, on cooler neutrals. */
+:root[data-accent="navy"]:not([data-theme="dark"]) {
+  --background: #f3f4f7;
+  --foreground: #171f2b;
+  --card-foreground: #171f2b;
+  --popover-foreground: #171f2b;
+  --muted: #eceef3;
+  --muted-foreground: #5b6474;
+  --border: #dfe3ea;
+  --input: #c9d0db;
+  --brand: #1f3f78;
+  --brand-deep: #16305c;
+  --ink: #171f2b;
+  --secondary: #e7edf7;
+  --secondary-foreground: #1b3566;
+  --accent: #e7edf7;
+  --accent-foreground: #1b3566;
+  --band: #24447c;
+  --band-deep: #182f58;
+  --chart-1: #3466c4;
+  --chart-2: #d0506d;
+  --chart-3: #875bd8;
+  --chart-4: #1c9ca3;
+  --chart-5: #c48a1c;
+  --chart-6: #2e8557;
+  --chart-grid: #dfe3ea;
+  --map-water: #dbe2ec;
+  --map-land: #fbfbfd;
+  --map-land-2: #f4f5f8;
+  --map-forest: #eff2f6;
+  --map-urban: #f0f1f4;
+  --map-glacier: #ffffff;
+  --map-border: #b5bfd0;
+  --map-label: #4d586d;
+  --map-label-city: #2c354a;
+  --map-halo: #fbfbfd;
+  --map-ocean-label: #526280;
+  --map-road: #e8ebf1;
+  --map-ramp-to: #2f5596;
+  --sidebar-foreground: #171f2b;
+  --sidebar-accent: #e7edf7;
+  --sidebar-accent-foreground: #1b3566;
+  --sidebar-border: #dfe3ea;
+  --sidebar-muted: #5b6474;
+  --shadow-soft: 0 1px 2px rgb(23 31 43 / 0.04), 0 8px 24px -12px rgb(23 31 43 / 0.1);
+  --shadow-lift: 0 2px 4px rgb(23 31 43 / 0.06), 0 16px 40px -16px rgb(23 31 43 / 0.18);
+}
+:root[data-accent="navy"][data-theme="dark"],
+:root[data-accent="navy"][data-rail="dark"]:not([data-theme="dark"]) [data-rail-surface] {
+  --background: #0e1220;
+  --foreground: #e6eaf2;
+  --card: #161b2b;
+  --card-foreground: #e6eaf2;
+  --popover: #161b2b;
+  --popover-foreground: #e6eaf2;
+  --muted: #1e2536;
+  --muted-foreground: #a5aec2;
+  --border: #28304a;
+  --input: #39435f;
+  --brand: #7fa7ea;
+  --brand-deep: #6a94d9;
+  --ink: #e6eaf2;
+  --primary-foreground: #0e1220;
+  --secondary: #1e2536;
+  --secondary-foreground: #e6eaf2;
+  --accent: #1c2a45;
+  --accent-foreground: #b9cdf3;
+  --band: #1d3560;
+  --band-deep: #152747;
+  --band-foreground: #f1f4fa;
+  --band-muted: rgba(241, 244, 250, 0.8);
+  --chart-1: #4a7ed9;
+  --chart-2: #d15a7c;
+  --chart-3: #8e70df;
+  --chart-4: #219ca8;
+  --chart-5: #c88214;
+  --chart-6: #33926a;
+  --chart-grid: #28304a;
+  --map-water: #060914;
+  --map-land: #131a2b;
+  --map-land-2: #141b2d;
+  --map-forest: #131a2a;
+  --map-urban: #171e30;
+  --map-glacier: #1b2336;
+  --map-border: #303c58;
+  --map-label: #9eabc6;
+  --map-label-city: #c9d2e5;
+  --map-halo: #0e1220;
+  --map-ocean-label: #6b7ba0;
+  --map-road: #1c2437;
+  --map-ramp-to: #8db3f2;
+  --sidebar: #161b2b;
+  --sidebar-foreground: #e6eaf2;
+  --sidebar-primary-foreground: #0e1220;
+  --sidebar-accent: #1c2a45;
+  --sidebar-accent-foreground: #b9cdf3;
+  --sidebar-border: #28304a;
+  --sidebar-muted: #a5aec2;
+}
+
+/* Page surface: soft (the theme's own), plain (white by day, black by night), or tinted with the accent. */
+:root[data-surface="white"]:not([data-theme="dark"]) {
+  --background: #ffffff;
+}
+:root[data-surface="tinted"]:not([data-theme="dark"]) {
+  --background: #eaf0ec;
+}
+:root[data-accent="navy"][data-surface="tinted"]:not([data-theme="dark"]) {
+  --background: #e9edf5;
+}
+:root[data-surface="white"][data-theme="dark"],
+:root[data-surface="white"][data-rail="dark"]:not([data-theme="dark"]) [data-rail-surface] {
+  --background: #000000;
+  --card: #0d1411;
+  --popover: #0d1411;
+  --sidebar: #0d1411;
+}
+:root[data-accent="navy"][data-surface="white"][data-theme="dark"],
+:root[data-accent="navy"][data-surface="white"][data-rail="dark"]:not([data-theme="dark"]) [data-rail-surface] {
+  --card: #0f131f;
+  --popover: #0f131f;
+  --sidebar: #0f131f;
+}
+:root[data-surface="tinted"][data-theme="dark"] {
+  --background: #101a15;
+}
+:root[data-accent="navy"][data-surface="tinted"][data-theme="dark"] {
+  --background: #0f1526;
+}
+
+/* High contrast (Section 508 / WCAG AAA): black-on-white text, borders you can see, deeper
+   status colors. Every pair is at 7:1 or better, including on its own tinted wash. */
+:root[data-contrast="high"]:not([data-theme="dark"]) {
+  /* map: water and land further apart, borders and labels at full ink */
+  --map-water: #c3d3cc;
+  --map-land: #ffffff;
+  --map-land-2: #f6f7f3;
+  --map-forest: #f1f5ef;
+  --map-urban: #f2f3ef;
+  --map-glacier: #ffffff;
+  --map-border: #58665f;
+  --map-label: #1f2b25;
+  --map-label-city: #000000;
+  --map-halo: #ffffff;
+  --map-ocean-label: #2c4a41;
+  --map-road: #d9ded7;
+  --map-ramp-to: #1f4a3b;
+  --foreground: #000000;
+  --card-foreground: #000000;
+  --popover-foreground: #000000;
+  --muted: #e6eae5;
+  --muted-foreground: #3a453f;
+  --border: #7f8a84;
+  --input: #5f6a64;
+  --brand: #1f4a3b;
+  --brand-deep: #163629;
+  --ink: #000000;
+  --gold-deep: #5c4512;
+  --ok: #125033;
+  --warn: #7a3706;
+  --alert: #8f1212;
+  --secondary: #dcebe2;
+  --secondary-foreground: #0f2c21;
+  --accent: #dcebe2;
+  --accent-foreground: #0f2c21;
+  --destructive: #8f1212;
+  --band: #1f4a3b;
+  --band-deep: #163629;
+  --band-muted: rgba(255, 255, 255, 0.92);
+  --band-border: rgba(255, 255, 255, 0.35);
+  --status-requested: #1a4577;
+  --status-developing: #5e3b06;
+  --status-clearance: #4c2d9c;
+  --status-confirmed: #125033;
+  --status-completed: #094d48;
+  --status-closed: #3a453f;
+  --status-on-hold: #34424f;
+  --status-cancelled: #7a2222;
+  --age-ok: #125033;
+  --age-warn: #5e3b06;
+  --age-alert: #8f1212;
+  --chart-grid: #b8c1bb;
+  --sidebar-foreground: #000000;
+  --sidebar-accent: #dcebe2;
+  --sidebar-accent-foreground: #0f2c21;
+  --sidebar-border: #7f8a84;
+  --sidebar-muted: #3a453f;
+}
+:root[data-accent="navy"][data-contrast="high"]:not([data-theme="dark"]) {
+  --map-water: #c2cedf;
+  --map-land: #ffffff;
+  --map-land-2: #f5f6f9;
+  --map-forest: #f0f3f7;
+  --map-urban: #f1f2f5;
+  --map-glacier: #ffffff;
+  --map-border: #5a6680;
+  --map-label: #1d2638;
+  --map-label-city: #000000;
+  --map-halo: #ffffff;
+  --map-ocean-label: #2d4470;
+  --map-road: #d8dde6;
+  --map-ramp-to: #173265;
+  --brand: #173265;
+  --brand-deep: #10244a;
+  --secondary: #dfe7f5;
+  --secondary-foreground: #0f2450;
+  --accent: #dfe7f5;
+  --accent-foreground: #0f2450;
+  --band: #173265;
+  --band-deep: #10244a;
+  --sidebar-accent: #dfe7f5;
+  --sidebar-accent-foreground: #0f2450;
+}
+:root[data-contrast="high"][data-theme="dark"],
+:root[data-contrast="high"][data-rail="dark"]:not([data-theme="dark"]) [data-rail-surface] {
+  --map-water: #000000;
+  --map-land: #1c2b23;
+  --map-land-2: #1d2c24;
+  --map-forest: #1b2a22;
+  --map-urban: #213028;
+  --map-glacier: #26352d;
+  --map-border: #8a9c92;
+  --map-label: #dce6e0;
+  --map-label-city: #ffffff;
+  --map-halo: #000000;
+  --map-ocean-label: #9dbdb0;
+  --map-road: #2e3e36;
+  --map-ramp-to: #a8e6c6;
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #0b0f0d;
+  --card-foreground: #ffffff;
+  --popover: #0b0f0d;
+  --popover-foreground: #ffffff;
+  --muted: #161d19;
+  --muted-foreground: #c9d3cc;
+  --border: #6b776f;
+  --input: #8a968f;
+  --brand: #8fd4b3;
+  --brand-deep: #7fc6a3;
+  --ink: #ffffff;
+  --gold-deep: #e9c96e;
+  --ok: #7fe3b0;
+  --warn: #ffd166;
+  --alert: #ff9a9a;
+  --primary-foreground: #000000;
+  --secondary: #123326;
+  --secondary-foreground: #bfe8d2;
+  --accent: #123326;
+  --accent-foreground: #bfe8d2;
+  --destructive: #ff9a9a;
+  --band: #123326;
+  --band-deep: #0b2118;
+  --band-foreground: #ffffff;
+  --band-muted: rgba(255, 255, 255, 0.92);
+  --band-border: rgba(255, 255, 255, 0.35);
+  --status-requested: #9cc2ff;
+  --status-developing: #ffcf7a;
+  --status-clearance: #cdb8ff;
+  --status-confirmed: #7fe3b0;
+  --status-completed: #7fe0da;
+  --status-closed: #c9d3cc;
+  --status-on-hold: #c3d1e6;
+  --status-cancelled: #ffa0a0;
+  --age-ok: #7fe3b0;
+  --age-warn: #ffcf7a;
+  --age-alert: #ff9a9a;
+  --chart-grid: #3d4740;
+  --sidebar: #0b0f0d;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #123326;
+  --sidebar-accent-foreground: #bfe8d2;
+  --sidebar-border: #6b776f;
+  --sidebar-muted: #c9d3cc;
+}
+:root[data-accent="navy"][data-contrast="high"][data-theme="dark"],
+:root[data-accent="navy"][data-contrast="high"][data-rail="dark"]:not([data-theme="dark"]) [data-rail-surface] {
+  --map-water: #000000;
+  --map-land: #18223a;
+  --map-land-2: #19243c;
+  --map-forest: #17213a;
+  --map-urban: #1d2740;
+  --map-glacier: #222c45;
+  --map-border: #8b99b8;
+  --map-label: #dde4f2;
+  --map-label-city: #ffffff;
+  --map-halo: #000000;
+  --map-ocean-label: #9fb2d9;
+  --map-road: #2a3550;
+  --map-ramp-to: #c9dbfa;
+  --brand: #a9c6f5;
+  --brand-deep: #98b8ee;
+  --secondary: #14264a;
+  --secondary-foreground: #c9dbfa;
+  --accent: #14264a;
+  --accent-foreground: #c9dbfa;
+  --band: #14264a;
+  --band-deep: #0d1a35;
+  --sidebar-accent: #14264a;
+  --sidebar-accent-foreground: #c9dbfa;
+}
+
+/* Navigation rail (lib/preferences/schema.ts `nav` and `collapsed`). Style and fold are separate
+   attributes on <html>, stamped before first paint, so they compose — a collapsed floating rail is
+   still a floating panel — and a reader who left it collapsed never sees the wide rail flash by;
+   React only decides what the rows contain. Rem, not pixels: the rail grows with the text size. */
+[data-side-rail] {
+  width: 14.75rem;
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html[data-collapsed="yes"] [data-side-rail] {
+  width: 4rem;
+}
+/* Until React has hydrated, the server's full-width rows are still in the DOM: hide the parts a
+   4rem rail cannot hold, so the first frame already looks like the icon rail. */
+html[data-collapsed="yes"] [data-side-rail] :is([data-rail-children], [data-rail-fold]) {
+  display: none;
+}
+/* Floating: a panel clear of every edge, with a border and a shadow instead of one hairline. */
+html[data-nav="floating"] [data-side-rail] {
+  top: 0.75rem;
+  height: calc(100vh - 1.5rem);
+  margin: 0.75rem 0 0.75rem 0.75rem;
+  border-width: 1px;
+  border-radius: 0.625rem;
+  box-shadow: var(--shadow-lift);
+}
+
+/* Hybrid: a dark rail beside a light page. The dark blocks above hand the rail their tokens; the
+   four below are declared on :root as var(--brand) and would resolve there, against the light
+   brand, so the rail declares its own copies, which resolve against its dark one. */
+:root[data-rail="dark"]:not([data-theme="dark"]) [data-rail-surface] {
+  --primary: var(--brand);
+  --ring: var(--brand);
+  --sidebar-primary: var(--brand);
+  --sidebar-ring: var(--brand);
+}
+
+@theme inline {
+  /* One family throughout (Public Sans); `--font-ui` resolves to it, or to the hyperlegible
+     face when the reader asks for it under Display & accessibility. */
+  --font-sans: var(--font-ui), "Public Sans", system-ui, sans-serif;
+  --font-heading: var(--font-ui), "Public Sans", system-ui, sans-serif;
+  --font-display: var(--font-ui), "Public Sans", system-ui, sans-serif;
+  --font-mono: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+
+  /* An upload in flight: a short bar sweeping its track. Collapses with every other
+     animation under reduced motion. */
+  --animate-indeterminate: indeterminate 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  @keyframes indeterminate {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(300%);
+    }
+  }
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-navy: var(--navy);
+  --color-ink: var(--ink);
+  --color-gold: var(--gold);
+  --color-gold-deep: var(--gold-deep);
+
+  --color-band: var(--band);
+  --color-band-deep: var(--band-deep);
+  --color-band-foreground: var(--band-foreground);
+  --color-band-muted: var(--band-muted);
+  --color-band-surface: var(--band-surface);
+  --color-band-border: var(--band-border);
+
+  --color-status-requested: var(--status-requested);
+  --color-status-developing: var(--status-developing);
+  --color-status-clearance: var(--status-clearance);
+  --color-status-confirmed: var(--status-confirmed);
+  --color-status-completed: var(--status-completed);
+  --color-status-closed: var(--status-closed);
+  --color-status-on-hold: var(--status-on-hold);
+  --color-status-cancelled: var(--status-cancelled);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-alert: var(--alert);
+
+  --color-age-ok: var(--age-ok);
+  --color-age-warn: var(--age-warn);
+  --color-age-alert: var(--age-alert);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-grid: var(--chart-grid);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-muted: var(--sidebar-muted);
+
+  --shadow-soft: var(--shadow-soft);
+  --shadow-lift: var(--shadow-lift);
+
+  /* A flat 5px radius on every surface — sharp but not severe; small controls one notch tighter.
+     The scale is deliberately flattened so cards, panels and the band all share one edge.
+     (The bare `rounded` utility reads the deprecated `--radius` theme key, not `--radius-DEFAULT`,
+     so both are set.) */
+  --radius: 0.3125rem;
+  --radius-DEFAULT: 0.3125rem;
+  --radius-sm: 0.1875rem;
+  --radius-md: 0.25rem;
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply font-sans;
+    color-scheme: light;
+  }
+  html[data-theme="dark"],
+  html[data-rail="dark"]:not([data-theme="dark"]) [data-rail-surface] {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  /* The same, when the reader asks for it under Display & accessibility rather than in the OS. */
+  :root[data-motion="reduced"] *,
+  :root[data-motion="reduced"] *::before,
+  :root[data-motion="reduced"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* High contrast: a focus ring nobody can miss. */
+  :root[data-contrast="high"] :focus-visible {
+    outline-width: 3px;
+  }
+}
+
+@layer utilities {
+  /* Section heading: the interface face a weight up, tightened a touch — compact, never showy. */
+  .heading-display {
+    font-family: var(--font-ui), "Public Sans", system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  .numeric {
+    font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Horizontal scroll container: native scrollbar hidden always. The fade mask is applied only
+     on the side `useScrollEdges` reports as still clipped, via `data-fade`, so a row that fits
+     in full reads clean instead of washing out its first/last characters for no reason. */
+  .scroll-fade-x {
+    scrollbar-width: none;
+  }
+  .scroll-fade-x::-webkit-scrollbar {
+    display: none;
+  }
+  .scroll-fade-x[data-fade="start"] {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 1.5rem);
+    mask-image: linear-gradient(to right, transparent, black 1.5rem);
+  }
+  .scroll-fade-x[data-fade="end"] {
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 1.5rem), transparent);
+    mask-image: linear-gradient(to right, black calc(100% - 1.5rem), transparent);
+  }
+  .scroll-fade-x[data-fade="both"] {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 1.5rem, black calc(100% - 1.5rem), transparent);
+    mask-image: linear-gradient(to right, transparent, black 1.5rem, black calc(100% - 1.5rem), transparent);
+  }
+  /* The program band: a deep forest gradient with a faint highlight at the top-left corner,
+     so the surface reads as material rather than flat fill. Texture you notice on the second
+     glance, never on the first. */
+  .band-surface {
+    color: var(--band-foreground);
+    background-image:
+      radial-gradient(640px 320px at 0% 0%, rgba(255, 255, 255, 0.09), transparent 70%),
+      linear-gradient(135deg, var(--band) 0%, var(--band-deep) 100%);
+  }
+  /* Waiting-on severity washes, laid over the card as an image layer so the card underneath
+     stays opaque. A translucent background-color would replace the card's white and blend with
+     the off-white page instead, where muted text drops under the 4.5:1 floor. */
+  .wash-ok {
+    background-image: linear-gradient(color-mix(in srgb, var(--age-ok) 8%, transparent), color-mix(in srgb, var(--age-ok) 8%, transparent));
+  }
+  .wash-warn {
+    background-image: linear-gradient(color-mix(in srgb, var(--age-warn) 10%, transparent), color-mix(in srgb, var(--age-warn) 10%, transparent));
+  }
+  .wash-alert {
+    background-image: linear-gradient(color-mix(in srgb, var(--age-alert) 10%, transparent), color-mix(in srgb, var(--age-alert) 10%, transparent));
+  }
+  /* Marks that arrive rather than appear: a bar growing out from its baseline, a line being
+     drawn. Once each, on the opening of whatever holds them; `--arrive-delay` staggers a set.
+     Reduced motion already collapses every duration; the delays are dropped here so nothing
+     waits, empty, for an animation that will not play. */
+  .grow-x {
+    transform-origin: left center;
+    animation: grow-x 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--arrive-delay, 0ms) both;
+  }
+  .draw-line {
+    stroke-dasharray: 1;
+    animation: draw-line 1200ms cubic-bezier(0.22, 1, 0.36, 1) var(--arrive-delay, 0ms) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .grow-x,
+    .draw-line {
+      animation-delay: 0ms !important;
+    }
+  }
+  :root[data-motion="reduced"] .grow-x,
+  :root[data-motion="reduced"] .draw-line {
+    animation-delay: 0ms !important;
+  }
+  /* A white surface with the hairline-plus-soft-shadow edge used by every card. */
+  .surface {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-soft);
+  }
+  /* The full screen's floating surfaces: the card color over the map, 90% opaque (88% where the
+     chrome is dark), blurred, with the lift shadow. The mix is computed on the surface itself, so
+     under Hybrid it is made from the surface's own dark card color. lib/geo/map-palette.ts proves
+     the contrast at these opacities. High contrast, and a request for less transparency, make it
+     solid; their selectors outrank the dark ones, which keep their roots inside :where(). */
+  .glass {
+    --glass-mix: 90%;
+    color: var(--card-foreground);
+    background-color: color-mix(in srgb, var(--card) var(--glass-mix), transparent);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lift);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+  }
+  :where([data-theme="dark"]) .glass,
+  :where(:root[data-rail="dark"]:not([data-theme="dark"])) .glass[data-rail-surface] {
+    --glass-mix: 88%;
+  }
+  :root[data-contrast="high"] .glass {
+    --glass-mix: 100%;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    :root .glass {
+      --glass-mix: 100%;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+}
+
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+/* The executive brief prints as the document it is: nothing but the brief, edge to edge. */
+@media print {
+  body:has([data-brief]) * {
+    visibility: hidden;
+  }
+  body:has([data-brief]) [data-brief],
+  body:has([data-brief]) [data-brief] * {
+    visibility: visible;
+  }
+  body:has([data-brief]) [data-brief] {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    max-width: none;
+    border: 0;
+    box-shadow: none;
+  }
+  @page {
+    margin: 0.5in;
+  }
+}
+
+/* The brief is paper in both themes: the sheet the PDF prints, read white by day and by night.
+   Light tokens are pinned here so the sheet keeps its day contrast under the dark theme. */
+[data-brief] {
+  color-scheme: light;
+  /* `color` is inherited as a computed value, so the sheet restates it rather than only
+     redefining the token the body computed it from under the dark theme. */
+  color: var(--foreground);
+  background-color: var(--background);
+  --background: #ffffff;
+  --foreground: #16211c;
+  --card: #ffffff;
+  --card-foreground: #16211c;
+  --muted: #eef1ec;
+  --muted-foreground: #5c6a63;
+  --border: #e2e6e1;
+  --brand: #2e5c4b;
+  --primary: var(--brand);
+  --primary-foreground: #ffffff;
+  --accent: #e6f1ea;
+  --accent-foreground: #1f4a3b;
+  --chart-1: #2e8557;
+  --chart-2: #c48a1c;
+  --chart-3: #3b6fd8;
+  --shadow-soft: 0 1px 2px rgb(22 33 28 / 0.04), 0 8px 24px -12px rgb(22 33 28 / 0.1);
+}
+:root[data-accent="navy"] [data-brief] {
+  --brand: #1f3f78;
+  --chart-1: #3466c4;
+  --chart-2: #d0506d;
+  --chart-3: #875bd8;
+}

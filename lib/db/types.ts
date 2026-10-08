@@ -1,0 +1,23 @@
+import type * as s from "./schema";
+
+export type RegionRow = typeof s.regions.$inferSelect;
+export type CountryRow = typeof s.countries.$inferSelect;
+export type BureauRow = typeof s.bureaus.$inferSelect;
+export type TopicRow = typeof s.topics.$inferSelect;
+export type OrganizationRow = typeof s.organizations.$inferSelect;
+export type ContactRow = typeof s.contacts.$inferSelect;
+export type StaffRow = typeof s.staffDirectory.$inferSelect;
+export type UserRow = typeof s.users.$inferSelect;
+export type MeetingRow = typeof s.meetings.$inferSelect;
+export type MeetingInsert = typeof s.meetings.$inferInsert;
+export type CandidateDateRow = typeof s.meetingCandidateDates.$inferSelect;
+export type MeetingTopicRow = typeof s.meetingTopics.$inferSelect;
+export type MeetingExpertRow = typeof s.meetingExperts.$inferSelect;
+export type ParticipantRow = typeof s.meetingParticipants.$inferSelect;
+export type ParticipantTotalRow = typeof s.meetingParticipantTotals.$inferSelect;
+export type DocumentRow = typeof s.meetingDocuments.$inferSelect;
+export type AgendaItemRow = typeof s.meetingAgendaItems.$inferSelect;
+export type ActivityRow = typeof s.activities.$inferSelect;
+export type ActivityInsert = typeof s.activities.$inferInsert;
+export type AuditRow = typeof s.auditLog.$inferSelect;
+export type SavedViewRow = typeof s.savedViews.$inferSelect;

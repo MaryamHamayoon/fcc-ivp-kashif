@@ -1,0 +1,12 @@
+{
+  "//": "The root tsconfig excludes e2e/ so Playwright's globals never leak into the app's type space. This project types the suite on its own: npx tsc --noEmit -p e2e",
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "paths": { "@/*": ["../*"] },
+    "noEmit": true,
+    "incremental": false
+  },
+  "include": ["**/*.ts", "../playwright.config.ts"],
+  "exclude": []
+}

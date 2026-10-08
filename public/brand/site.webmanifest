@@ -1,0 +1,19 @@
+{
+  "name": "International Visitors Program \u00b7 FCC",
+  "short_name": "IVP",
+  "icons": [
+    {
+      "src": "/brand/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/brand/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#1c3664",
+  "background_color": "#f6f7f9",
+  "display": "standalone"
+}
